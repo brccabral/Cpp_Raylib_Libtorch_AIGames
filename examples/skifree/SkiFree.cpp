@@ -978,20 +978,14 @@ SkiFree::SkiFree()
         if (i % 2 == 0)
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_LEFT;
-            flag.state = SkiObject::STATE_SLALOM_LEFT;
             flag.position.x = -460;
             flag.position.y = 60 * 20 + 20 * 20 * i;
-            flag.current_frame_index = 22;
-            flag.current_frame_rectangle = frames[22];
         }
         else
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_RIGHT;
-            flag.state = SkiObject::STATE_SLALOM_RIGHT;
             flag.position.x = -320;
             flag.position.y = 60 * 20 + 20 * 20 * i;
-            flag.current_frame_index = 23;
-            flag.current_frame_rectangle = frames[23];
         }
         slalom_flags_objects.push_back(flag);
     }
@@ -1002,20 +996,14 @@ SkiFree::SkiFree()
         if (i % 2 == 0)
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_LEFT;
-            flag.state = SkiObject::STATE_SLALOM_LEFT;
             flag.position.x = 340;
             flag.position.y = 65 * 20 + 25 * 20 * i;
-            flag.current_frame_index = 22;
-            flag.current_frame_rectangle = frames[22];
         }
         else
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_RIGHT;
-            flag.state = SkiObject::STATE_SLALOM_RIGHT;
             flag.position.x = 480;
             flag.position.y = 65 * 20 + 25 * 20 * i;
-            flag.current_frame_index = 23;
-            flag.current_frame_rectangle = frames[23];
         }
         slalom_flags_objects.push_back(flag);
     }
@@ -1879,6 +1867,7 @@ void SkiFree::reset()
     current_time = start_time;
 
     manage_objects();
+    reset_flags();
 }
 
 void SkiFree::collisions_manager()
@@ -2158,6 +2147,8 @@ void SkiFree::start_slalom()
     current_mode = MODE_SLALOM;
     start_time = std::chrono::steady_clock::now();
     end_distance = 540 * 20;
+
+    reset_flags();
 }
 
 void SkiFree::start_freestyle()
@@ -2171,6 +2162,8 @@ void SkiFree::start_tree_slalom()
     current_mode = MODE_TREE_SLALOM;
     start_time = std::chrono::steady_clock::now();
     end_distance = 1040 * 20;
+
+    reset_flags();
 }
 
 bool SkiFree::player_crossed_down(const float threshold, const Vector2 pos_before)
@@ -2227,6 +2220,25 @@ void SkiFree::slalom_manager(const game_mode_t current_mode, const Vector2 pos_b
                     }
                 }
             }
+        }
+    }
+}
+
+void SkiFree::reset_flags()
+{
+    for (auto &&flag: slalom_flags_objects)
+    {
+        if (flag.type == SkiObject::TYPE_SLALOM_ARROW_LEFT)
+        {
+            flag.state = SkiObject::STATE_SLALOM_LEFT;
+            flag.current_frame_index = 22;
+            flag.current_frame_rectangle = frames[22];
+        }
+        if (flag.type == SkiObject::TYPE_SLALOM_ARROW_RIGHT)
+        {
+            flag.state = SkiObject::STATE_SLALOM_RIGHT;
+            flag.current_frame_index = 23;
+            flag.current_frame_rectangle = frames[23];
         }
     }
 }
