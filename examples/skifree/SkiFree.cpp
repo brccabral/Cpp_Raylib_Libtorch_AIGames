@@ -1089,7 +1089,7 @@ void SkiFree::draw() const
                     "Time: %d:%d:%d.%d", hours.count(), minutes.count(), seconds.count(),
                     milliseconds.count()),
             655, 32, 14, BLACK);
-    DrawText(TextFormat("Dist: %02dm", int(player.position.y / 20)), 655, 48, 14, BLACK);
+    DrawText(TextFormat("Dist: %02dm", int(display_distance / 20)), 655, 48, 14, BLACK);
     DrawText(TextFormat("Speed: %.0fm/s", Vector2Length(player.velocity)), 655, 64, 14, BLACK);
     DrawText("Style: 0", 655, 80, 14, BLACK);
 }
@@ -1548,15 +1548,15 @@ void SkiFree::update()
 
     if (player.position.y >= 40 * 20 && pos_before.y < 40 * 20)
     {
-        if (player.position.x >= -540 && player.position.x <= -240)
+        if (player.position.x >= -540 && player.position.x <= -240 + 27)
         {
             start_slalom();
         }
-        if (player.position.x >= -160 && player.position.x <= 180)
+        if (player.position.x >= -160 && player.position.x <= 180 + 27)
         {
             start_freestyle();
         }
-        if (player.position.x >= 260 && player.position.x <= 560)
+        if (player.position.x >= 260 && player.position.x <= 560 + 27)
         {
             start_tree_slalom();
         }
@@ -1570,6 +1570,15 @@ void SkiFree::update()
     if (current_mode == MODE_SLALOM || current_mode == MODE_TREE_SLALOM)
     {
         current_time = std::chrono::steady_clock::now();
+    }
+
+    if (current_mode == MODE_PRACTICE)
+    {
+        display_distance = player.position.y;
+    }
+    else
+    {
+        display_distance = end_distance - player.position.y;
     }
 
     manage_objects();
@@ -2129,15 +2138,18 @@ void SkiFree::start_slalom()
 {
     current_mode = MODE_SLALOM;
     start_time = std::chrono::steady_clock::now();
+    end_distance = 540 * 20;
 }
 
 void SkiFree::start_freestyle()
 {
     current_mode = MODE_FREESTYLE;
+    end_distance = 1080 * 20;
 }
 
 void SkiFree::start_tree_slalom()
 {
     current_mode = MODE_TREE_SLALOM;
     start_time = std::chrono::steady_clock::now();
+    end_distance = 1080 * 20;
 }

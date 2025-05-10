@@ -186,4 +186,6 @@ private:
 
     std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point current_time = start_time;
+    float display_distance{};
+    float end_distance{};
 };
