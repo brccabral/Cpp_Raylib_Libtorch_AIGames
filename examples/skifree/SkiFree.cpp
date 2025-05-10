@@ -2206,6 +2206,7 @@ void SkiFree::slalom_manager(const game_mode_t current_mode, const Vector2 pos_b
                         flag.state = SkiObject::STATE_SLALOM_FAIL;
                         flag.current_frame_index = 25;
                         flag.current_frame_rectangle = frames[25];
+                        start_time -= std::chrono::seconds(5);
                     }
                 }
 
@@ -2222,6 +2223,7 @@ void SkiFree::slalom_manager(const game_mode_t current_mode, const Vector2 pos_b
                         flag.state = SkiObject::STATE_SLALOM_FAIL;
                         flag.current_frame_index = 25;
                         flag.current_frame_rectangle = frames[25];
+                        start_time -= std::chrono::seconds(5);
                     }
                 }
             }
