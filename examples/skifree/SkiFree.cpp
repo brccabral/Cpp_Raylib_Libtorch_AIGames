@@ -1002,6 +1002,7 @@ SkiFree::SkiFree()
         if (i % 2 == 0)
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_LEFT;
+            flag.state = SkiObject::STATE_SLALOM_LEFT;
             flag.position.x = 340;
             flag.position.y = 65 * 20 + 25 * 20 * i;
             flag.current_frame_index = 22;
@@ -1010,6 +1011,7 @@ SkiFree::SkiFree()
         else
         {
             flag.type = SkiObject::TYPE_SLALOM_ARROW_RIGHT;
+            flag.state = SkiObject::STATE_SLALOM_RIGHT;
             flag.position.x = 480;
             flag.position.y = 65 * 20 + 25 * 20 * i;
             flag.current_frame_index = 23;
@@ -1614,6 +1616,11 @@ void SkiFree::update()
 
     collisions_manager();
 
+    if (current_mode == MODE_SLALOM)
+    {
+        slalom_manager(current_mode, pos_before);
+    }
+
     camera.offset = GetWorldToScreen2D(player.position, camera);
     camera.target = player.position;
     Vector2 delta = Vector2(GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 150) -
@@ -2174,4 +2181,50 @@ bool SkiFree::player_crossed_down(const float threshold, const Vector2 pos_befor
 bool SkiFree::player_crossed_up(const float threshold, const Vector2 pos_before)
 {
     return player.position.y < threshold * 20 && pos_before.y >= threshold * 20;
+}
+
+void SkiFree::slalom_manager(const game_mode_t current_mode, const Vector2 pos_before)
+{
+    for (auto &flag: slalom_flags_objects)
+    {
+        if (player_crossed_down(flag.position.y / 20, pos_before))
+        {
+            if ((current_mode == MODE_SLALOM && flag.position.x < 0) ||
+                (current_mode == MODE_TREE_SLALOM && flag.position.x > 0))
+            {
+                auto distance = flag.position - player.position;
+                if (flag.state == SkiObject::STATE_SLALOM_LEFT)
+                {
+                    if (distance.x > 0)
+                    {
+                        flag.state = SkiObject::STATE_SLALOM_SUCCESS;
+                        flag.current_frame_index = 24;
+                        flag.current_frame_rectangle = frames[24];
+                    }
+                    else
+                    {
+                        flag.state = SkiObject::STATE_SLALOM_FAIL;
+                        flag.current_frame_index = 25;
+                        flag.current_frame_rectangle = frames[25];
+                    }
+                }
+
+                if (flag.state == SkiObject::STATE_SLALOM_RIGHT)
+                {
+                    if (distance.x < 0)
+                    {
+                        flag.state = SkiObject::STATE_SLALOM_SUCCESS;
+                        flag.current_frame_index = 24;
+                        flag.current_frame_rectangle = frames[24];
+                    }
+                    else
+                    {
+                        flag.state = SkiObject::STATE_SLALOM_FAIL;
+                        flag.current_frame_index = 25;
+                        flag.current_frame_rectangle = frames[25];
+                    }
+                }
+            }
+        }
+    }
 }

@@ -180,6 +180,7 @@ private:
     void start_tree_slalom();
     bool player_crossed_down(const float threshold, const Vector2 pos_before);
     bool player_crossed_up(const float threshold, const Vector2 pos_before);
+    void slalom_manager(const game_mode_t current_mode, const Vector2 pos_before);
 
     bool is_paused{};
     bool is_waiting_action = true;
