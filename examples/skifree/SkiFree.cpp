@@ -1074,7 +1074,21 @@ void SkiFree::draw() const
     DrawText(text, (GetScreenWidth() - width) / 2, 5, 22, WHITE);
 
     DrawRectangleLinesEx(Rectangle(650, 30, 150, 76), 2, BLACK);
-    DrawText("Time: 0:00:00.00", 655, 32, 14, BLACK);
+
+    auto elapsed = current_time - start_time;
+    auto hours = std::chrono::duration_cast<std::chrono::hours>(elapsed);
+    elapsed -= hours;
+    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(elapsed);
+    elapsed -= minutes;
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
+    elapsed -= seconds;
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
+
+    DrawText(
+            TextFormat(
+                    "Time: %d:%d:%d.%d", hours.count(), minutes.count(), seconds.count(),
+                    milliseconds.count()),
+            655, 32, 14, BLACK);
     DrawText(TextFormat("Dist: %02dm", int(player.position.y / 20)), 655, 48, 14, BLACK);
     DrawText(TextFormat("Speed: %.0fm/s", Vector2Length(player.velocity)), 655, 64, 14, BLACK);
     DrawText("Style: 0", 655, 80, 14, BLACK);
@@ -1532,6 +1546,32 @@ void SkiFree::update()
         yeti_stop(&yeti_2);
     }
 
+    if (player.position.y >= 40 * 20 && pos_before.y < 40 * 20)
+    {
+        if (player.position.x >= -540 && player.position.x <= -240)
+        {
+            start_slalom();
+        }
+        if (player.position.x >= -160 && player.position.x <= 180)
+        {
+            start_freestyle();
+        }
+        if (player.position.x >= 260 && player.position.x <= 560)
+        {
+            start_tree_slalom();
+        }
+    }
+
+    if (player.position.y < 40 * 20 && pos_before.y >= 40 * 20)
+    {
+        current_mode = MODE_PRACTICE;
+    }
+
+    if (current_mode == MODE_SLALOM || current_mode == MODE_TREE_SLALOM)
+    {
+        current_time = std::chrono::steady_clock::now();
+    }
+
     manage_objects();
     for (const auto long_live_object: long_live_objects)
     {
@@ -1818,6 +1858,10 @@ void SkiFree::reset()
     yeti_2.current_frame_rectangle = frames[67];
     yeti_2.state_countdown = GetRandomValue(1, 25);
 
+    current_mode = MODE_PRACTICE;
+    start_time = std::chrono::steady_clock::now();
+    current_time = start_time;
+
     manage_objects();
 }
 
@@ -2079,4 +2123,21 @@ void SkiFree::yeti_stop(SkiObject *yeti)
     yeti->offset_y = 0;
     yeti->state = SkiObject::STATE_YETI_HAPPY_1;
     yeti->state_countdown = GetRandomValue(1, 25);
+}
+
+void SkiFree::start_slalom()
+{
+    current_mode = MODE_SLALOM;
+    start_time = std::chrono::steady_clock::now();
+}
+
+void SkiFree::start_freestyle()
+{
+    current_mode = MODE_FREESTYLE;
+}
+
+void SkiFree::start_tree_slalom()
+{
+    current_mode = MODE_TREE_SLALOM;
+    start_time = std::chrono::steady_clock::now();
 }

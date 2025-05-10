@@ -2,6 +2,7 @@
 #include <list>
 #include <raylib.h>
 #include <vector>
+#include <chrono>
 
 class SkiObject
 {
@@ -174,9 +175,15 @@ private:
     void player_jump(const int jump_height);
     void yeti_chase(SkiObject *yeti, float speed);
     void yeti_stop(SkiObject *yeti);
+    void start_slalom();
+    void start_freestyle();
+    void start_tree_slalom();
 
     bool is_paused{};
     bool is_waiting_action = true;
 
     float speed_limit = 25;
+
+    std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point current_time = start_time;
 };
