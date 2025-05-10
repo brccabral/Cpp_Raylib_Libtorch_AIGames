@@ -1495,7 +1495,7 @@ void SkiFree::update()
     {
         yeti_1.position.y = -130 * 20;
     }
-    
+
     // teleport objects at 2050 for game continuity
     if (player_crossed_down(2050, pos_before))
     {
@@ -2109,6 +2109,18 @@ void SkiFree::player_jump(const int jump_height)
 
 void SkiFree::yeti_chase(SkiObject *yeti, float speed)
 {
+    auto distance = player.position - yeti->position;
+    if (std::abs(distance.x) > GetScreenWidth() * 2)
+    {
+        yeti->position.x =
+                player.position.x - GetScreenWidth() * 2 * distance.x / std::abs(distance.x);
+    }
+    if (std::abs(distance.y) > GetScreenHeight() * 20 * 2)
+    {
+        yeti->position.y =
+                player.position.y - GetScreenHeight() * 20 * 2 * distance.y / std::abs(distance.y);
+    }
+
     yeti->direction = Vector2Normalize(player.position - yeti->position);
     if (yeti->direction.y < 0)
     {
