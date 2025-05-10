@@ -1487,17 +1487,17 @@ void SkiFree::update()
     }
 
     // teleport yeti_1 based on player position thresholds
-    if (player.position.y >= 2000 * 20 && pos_before.y < 2000 * 20)
+    if (player_crossed_down(2000, pos_before))
     {
         yeti_1.position.y = 2100 * 20;
     }
-    if (player.position.y < 0 && pos_before.y >= 0)
+    if (player_crossed_up(0, pos_before))
     {
         yeti_1.position.y = -130 * 20;
     }
-
+    
     // teleport objects at 2050 for game continuity
-    if (player.position.y >= 2050 * 20 && pos_before.y < 2050 * 20)
+    if (player_crossed_down(2050, pos_before))
     {
         // teleport objects up mountain
         for (auto &obj: short_live_objects)
@@ -1509,7 +1509,7 @@ void SkiFree::update()
             obj->position.y -= 2050 * 20 * 2;
         }
     }
-    if (player.position.y <= -2050 * 20 && pos_before.y > -2050 * 20)
+    if (player_crossed_up(2050, pos_before))
     {
         // teleport objects down mountain
         for (auto &obj: short_live_objects)
@@ -1546,7 +1546,7 @@ void SkiFree::update()
         yeti_stop(&yeti_2);
     }
 
-    if (player.position.y >= 40 * 20 && pos_before.y < 40 * 20)
+    if (player_crossed_down(40, pos_before))
     {
         if (player.position.x >= -540 && player.position.x <= -240 + 27)
         {
@@ -1562,7 +1562,7 @@ void SkiFree::update()
         }
     }
 
-    if (player.position.y < 40 * 20 && pos_before.y >= 40 * 20)
+    if (player_crossed_up(40, pos_before))
     {
         current_mode = MODE_PRACTICE;
     }
@@ -2144,12 +2144,22 @@ void SkiFree::start_slalom()
 void SkiFree::start_freestyle()
 {
     current_mode = MODE_FREESTYLE;
-    end_distance = 1080 * 20;
+    end_distance = 1040 * 20;
 }
 
 void SkiFree::start_tree_slalom()
 {
     current_mode = MODE_TREE_SLALOM;
     start_time = std::chrono::steady_clock::now();
-    end_distance = 1080 * 20;
+    end_distance = 1040 * 20;
+}
+
+bool SkiFree::player_crossed_down(const float threshold, const Vector2 pos_before)
+{
+    return player.position.y >= threshold * 20 && pos_before.y < threshold * 20;
+}
+
+bool SkiFree::player_crossed_up(const float threshold, const Vector2 pos_before)
+{
+    return player.position.y < threshold * 20 && pos_before.y >= threshold * 20;
 }

@@ -173,11 +173,13 @@ private:
     void manage_objects();
     void player_hit(const BoundingBox &other_box);
     void player_jump(const int jump_height);
-    void yeti_chase(SkiObject *yeti, float speed);
+    void yeti_chase(SkiObject *yeti, const float speed);
     void yeti_stop(SkiObject *yeti);
     void start_slalom();
     void start_freestyle();
     void start_tree_slalom();
+    bool player_crossed_down(const float threshold, const Vector2 pos_before);
+    bool player_crossed_up(const float threshold, const Vector2 pos_before);
 
     bool is_paused{};
     bool is_waiting_action = true;
