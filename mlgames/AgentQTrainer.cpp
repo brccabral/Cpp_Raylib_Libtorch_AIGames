@@ -18,7 +18,7 @@ AgentQTrainer::get_play(const std::vector<double> &state, size_t count_samples) 
 {
     const auto state0 = torch::tensor(state, torch::kDouble)
                                 .reshape({(long) count_samples, (long) (*model)->input_size})
-                                .to(device);
+                                .to(device, torch::kFloat);
     (*model)->eval();
     auto prediction = torch::Tensor();
     {
@@ -131,15 +131,15 @@ void AgentQTrainer::train_step(
     const torch::Tensor old_states =
             torch::tensor(old_states_, torch::kDouble)
                     .reshape({(long) count_samples, (long) (*model)->input_size})
-                    .to(device);
+                    .to(device, torch::kFloat);
     const torch::Tensor actions =
             torch::tensor(actions_, torch::kInt)
                     .reshape({(long) count_samples, (long) (*model)->output_size})
-                    .to(device, torch::kDouble);
+                    .to(device, torch::kFloat);
     const torch::Tensor new_states =
             torch::tensor(new_states_, torch::kDouble)
                     .reshape({(long) count_samples, (long) (*model)->input_size})
-                    .to(device);
+                    .to(device, torch::kFloat);
 
     // 1: predict Q values with current state
     (*model)->train();
