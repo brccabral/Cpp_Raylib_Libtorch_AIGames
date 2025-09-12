@@ -54,9 +54,17 @@ int main()
     SetTargetFPS(10);
 #endif
 
+    bool isDrawing = true;
+    float keyPressedTimeout = 0;
 
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_D) && keyPressedTimeout > 0.3f)
+        {
+            isDrawing = !isDrawing;
+            keyPressedTimeout = 0;
+        }
+        keyPressedTimeout += GetFrameTime();
 #if MANUAL
         SnakeGameAI::action_t game_action = game.curr_action;
         if (IsKeyPressed(KEY_UP))
@@ -126,26 +134,34 @@ int main()
         }
 #endif
 
-        BeginDrawing();
-        ClearBackground(BLACK);
-        for (auto [x, y]: game.snake)
+        if (isDrawing)
         {
-            DrawRectangle(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLUE);
+            BeginDrawing();
+            ClearBackground(BLACK);
+            for (auto [x, y]: game.snake)
+            {
+                DrawRectangle(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLUE);
+                DrawRectangle(
+                        x * BLOCK_SIZE + 4, y * BLOCK_SIZE + 4, BLOCK_SIZE - 8, BLOCK_SIZE - 8,
+                        SKYBLUE);
+            }
             DrawRectangle(
-                    x * BLOCK_SIZE + 4, y * BLOCK_SIZE + 4, BLOCK_SIZE - 8, BLOCK_SIZE - 8,
-                    SKYBLUE);
-        }
-        DrawRectangle(
-                game.food.x * BLOCK_SIZE, game.food.y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, RED);
-        DrawText(TextFormat("Score: %d", game.get_score()), 0, 0, 20, WHITE);
-        DrawText(TextFormat("Record: %d", best_score), 0, 20, 20, WHITE);
-        DrawText(TextFormat("Time: %.2f", GetTime()), 0, 40, 20, WHITE);
+                    game.food.x * BLOCK_SIZE, game.food.y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE,
+                    RED);
+            DrawText(TextFormat("Score: %d", game.get_score()), 0, 0, 20, WHITE);
+            DrawText(TextFormat("Record: %d", best_score), 0, 20, 20, WHITE);
+            DrawText(TextFormat("Time: %.2f", GetTime()), 0, 40, 20, WHITE);
 #if !MANUAL
-        DrawText(TextFormat("Batch: %d", BATCH_SIZE), 0, 60, 20, WHITE);
-        DrawText(TextFormat("Max memory: %d", MAX_MEMORY), 0, 80, 20, WHITE);
+            DrawText(TextFormat("Batch: %d", BATCH_SIZE), 0, 60, 20, WHITE);
+            DrawText(TextFormat("Max memory: %d", MAX_MEMORY), 0, 80, 20, WHITE);
 #endif
 
-        EndDrawing();
+            EndDrawing();
+        }
+        else
+        {
+            PollInputEvents();
+        }
     }
 
     CloseWindow();
