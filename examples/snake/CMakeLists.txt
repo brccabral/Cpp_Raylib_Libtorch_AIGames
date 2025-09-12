@@ -20,3 +20,9 @@ else ()
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/models
     )
 endif ()
+
+if (EMSCRIPTEN)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY SUFFIX ".html")
+    target_link_options(${PROJECT_NAME} PRIVATE -sALLOW_MEMORY_GROWTH=1)
+    target_link_options(${PROJECT_NAME} PRIVATE --shell-file "$ENV{EMSCRIPTEN}/src/shell_brc.html")
+endif ()
